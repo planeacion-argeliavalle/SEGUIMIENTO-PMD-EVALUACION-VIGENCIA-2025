@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consola de Mando PDD - Argelia (Valle)</title>
+    <!-- Tailwind CSS para Estilos de Lujo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js para las Gráficas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS para la lectura de contingencia del Excel Local -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        .font-title { font-family: 'Montserrat', sans-serif; }
+        .lux-card { background: #ffffff; border: 2px solid #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 bg-slate-50">
+
+    <!-- ENCABEZADO INSTITUCIONAL -->
+    <header class="max-w-7xl mx-auto mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b-4 border-slate-300 pb-6">
+        <div class="flex items-center gap-4">
+            <div class="flex w-5 h-16 rounded-lg overflow-hidden shadow-sm flex-shrink-0">
+                <div class="w-1/3 h-full bg-blue-700"></div>
+                <div class="w-1/3 h-full bg-white"></div>
+                <div class="w-1/3 h-full bg-emerald-600"></div>
+            </div>
+            <div>
+                <h1 class="font-title text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Argelia: Compromiso de Todos</h1>
+                <p class="text-base md:text-xl text-slate-600 font-bold mt-0.5">Portal Institucional de Rendición de Cuentas — Seguimiento al Plan de Desarrollo</p>
+            </div>
+        </div>
+        
+        <!-- BOTÓN DE ACCIÓN / SINCRONIZACIÓN -->
+        <div class="flex flex-wrap items-center gap-4 w-full lg:w-auto">
+            <label class="w-full sm:w-auto bg-white hover:bg-slate-100 border-2 border-slate-300 text-slate-800 font-bold text-sm px-4 py-2.5 rounded-xl transition-all cursor-pointer text-center shadow-sm">
+                📁 Cargar Copia Excel Local
+                <input type="file" id="excel-local" accept=".xlsx, .xls" class="hidden" />
+            </label>
+            <button onclick="sincronizarEcosistema()" class="w-full sm:w-auto bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-sm px-6 py-3.5 rounded-xl transition-all shadow-md shadow-blue-700/20 text-center">
+                🔄 Sincronizar Datos en Vivo
+            </button>
+        </div>
+    </header>
+
+    <!-- TARJETAS DE AVANCE PRINCIPALES -->
+    <section class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="lux-card p-6 rounded-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-[5px] bg-gradient-to-r from-blue-600 via-slate-400 to-emerald-600"></div>
+            <span id="label-kpi-global" class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Avance Total Selección</span>
+            <h3 id="kpi-global" class="text-5xl font-black text-slate-900 mt-2 font-title">...</h3>
+            <div class="w-full bg-slate-200 h-3 rounded-full mt-4 overflow-hidden">
+                <div id="bar-global" class="bg-gradient-to-r from-blue-600 to-emerald-600 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="lux-card p-6 rounded-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-[5px] bg-emerald-600"></div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-700">1. Familia e Igualdad Social</span>
+            <h3 id="kpi-l1" class="text-5xl font-black text-slate-900 mt-2 font-title">--%</h3>
+            <div class="w-full bg-slate-200 h-3 rounded-full mt-4 overflow-hidden">
+                <div id="bar-l1" class="bg-emerald-600 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="lux-card p-6 rounded-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-[5px] bg-blue-600"></div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-blue-700">2. Desarrollo Económico</span>
+            <h3 id="kpi-l2" class="text-5xl font-black text-slate-900 mt-2 font-title">--%</h3>
+            <div class="w-full bg-slate-200 h-3 rounded-full mt-4 overflow-hidden">
+                <div id="bar-l2" class="bg-blue-600 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="lux-card p-6 rounded-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-[5px] bg-red-600"></div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-red-600">3. Medio Ambiente y Rural</span>
+            <h3 id="kpi-l3" class="text-5xl font-black text-slate-900 mt-2 font-title">--%</h3>
+            <div class="w-full bg-slate-200 h-3 rounded-full mt-4 overflow-hidden">
+                <div id="bar-l3" class="bg-red-500 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BLOQUES CENTRALES -->
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <!-- PANEL DE FILTROS CRUZADOS -->
+        <div class="lux-card p-6 rounded-3xl flex flex-col justify-between border-l-4 border-l-blue-700">
+            <div class="flex flex-col gap-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-base font-bold text-slate-900 font-title uppercase tracking-wide">⚙️ Panel de Filtros</h3>
+                    <button onclick="resetearFiltrosMaestros()" class="text-xs bg-slate-100 hover:bg-slate-200 text-blue-700 px-3 py-1 rounded-lg font-bold border border-slate-300">Limpiar</button>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">1. Filtrar por Oficina</label>
+                    <select id="select-secretaria" class="w-full px-4 py-2.5 bg-slate-100 border-2 border-slate-300 rounded-xl font-bold text-sm text-slate-900">
+                        <option value="">⚙️ Todas las Oficinas</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">2. Filtrar por Estado</label>
+                    <select id="select-estado" class="w-full px-4 py-2.5 bg-slate-100 border-2 border-slate-300 rounded-xl font-bold text-sm text-slate-900">
+                        <option value="">⚙️ Todos los Estados</option>
+                        <option value="Alto">🟢 Cumplimiento Alto (80-100%)</option>
+                        <option value="Medio">🟡 Cumplimiento Medio (50-79%)</option>
+                        <option value="Crítica">🔴 Alerta Crítica (&lt;50%)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-4 p-3 rounded-xl bg-slate-100 text-xs font-bold text-slate-700" id="txt-status-filtro">
+                Cargando datos relacionales...
+            </div>
+        </div>
+
+        <!-- Gráfico del Semáforo y Línea de Evolución -->
+        <div class="lux-card p-6 rounded-3xl shadow-sm flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-base font-bold text-slate-900 font-title uppercase tracking-wide">📈 Comportamiento y Alertas</h3>
+                    <div class="flex gap-1">
+                        <button onclick="cambiarVistaGrafica('dona')" id="btn-g-dona" class="px-2 py-0.5 bg-blue-700 text-white rounded text-[10px] font-bold">Alertas</button>
+                        <button onclick="cambiarVistaGrafica('linea')" id="btn-g-linea" class="px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-[10px] font-bold">Evolución</button>
+                    </div>
+                </div>
+                <div class="relative h-[150px] w-full flex justify-center items-center">
+                    <canvas id="canvas-semaforo"></canvas>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-1 text-center text-xs mt-4 font-bold text-slate-700" id="legend-semaforo-box">
+                <div class="p-2 border rounded-xl bg-emerald-50"><span id="txt-alto" class="text-emerald-600 block text-2xl font-black">0</span>🟢 Alto</div>
+                <div class="p-2 border rounded-xl bg-amber-50"><span id="txt-medio" class="text-amber-600 block text-2xl font-black">0</span>🟡 Medio</div>
+                <div class="p-2 border rounded-xl bg-red-50"><span id="txt-critico" class="text-red-600 block text-2xl font-black">0</span>🔴 Crítico</div>
+            </div>
+        </div>
+
+        <!-- Relatoría Ejecutiva con Audio-Guía -->
+        <div class="lux-card p-6 rounded-3xl flex flex-col justify-between bg-gradient-to-b from-white to-slate-50 border-l-4 border-l-emerald-600">
+            <div>
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-base font-bold text-emerald-800 font-title uppercase tracking-wide">📢 Relatoría de Análisis</h3>
+                    <button onclick="leerTableroEnVozAlta()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border border-emerald-300 rounded-lg px-3 py-1 text-xs font-bold flex items-center gap-1">
+                        🔊 Escuchar Análisis
+                    </button>
+                </div>
+                <hr class="mb-3">
+                <p id="text-narrativa" class="text-sm text-slate-800 leading-relaxed text-justify font-normal">
+                    Sincronizando indicadores con el archivo maestro de Google Drive...
+                </p>
+            </div>
+            <div class="mt-4 p-3 bg-red-50 border-2 border-red-200 text-xs font-semibold rounded-lg text-slate-700" id="text-alerta">
+                Estableciendo conexión en la nube...
+            </div>
+        </div>
+    </main>
+
+    <!-- LISTADO DE METAS ESPECÍFICAS CON SEMÁFORO EN COLUMNA -->
+    <section class="max-w-7xl mx-auto lux-card p-6 rounded-3xl mb-12">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900 font-title uppercase tracking-wide">📋 Listado Estructurado de Metas Específicas</h3>
+                <p class="text-xs text-slate-600 font-semibold mt-1">Escriba abajo para buscar palabras clave dentro de la selección activa (ej: "salud", "vías").</p>
+            </div>
+            <input type="text" id="table-search" placeholder="🔍 Escribe aquí para buscar..." class="w-full md:w-96 px-4 py-3 text-base bg-white border-2 border-slate-400 rounded-xl text-slate-900 font-bold placeholder-slate-400 shadow-sm"/>
+        </div>
+
+        <div class="overflow-x-auto w-full max-h-[420px]">
+            <table class="w-full text-left text-sm border-collapse">
+                <thead>
+                    <tr class="border-b-2 border-slate-300 text-slate-700 uppercase tracking-wider text-xs bg-slate-100 font-bold sticky top-0 backdrop-blur-md">
+                        <th class="py-3.5 px-4 w-1/5">Sector</th>
+                        <th class="py-3.5 px-4 w-1/5">Programa</th>
+                        <th class="py-3.5 px-4 w-1/3">Producto</th>
+                        <th class="py-3.5 px-4 w-1/12 text-center">Estado</th>
+                        <th class="py-3.5 px-4 w-1/6">Oficina Encargada</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body" class="divide-y divide-slate-200 text-slate-900 font-medium">
+                    <tr><td colspan="5" class="py-10 text-center text-slate-500 font-bold text-base">Cargando base relacional de Argelia...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ENGINE DE CONEXIÓN ROBUSTA Y CONTROL DE FORMULAS EN VIVO -->
+    <script>
+        let chartSf = null;
+        let mainRowsCache = [];
+        let filtroSecretariaActual = "";
+        let filtroEstadoActual = "";
+        let tipoGraficaActual = "dona";
+
+        let globalSemaforoData = { verde: 0, amarillo: 0, rojo: 0 };
+        let globalTrimestres = { t1: 0, t2: 0, t3: 0, t4: 0, c: 0 };
+
+        // EXTRACTOR DIRECTO AL GID EN TIEMPO REAL DE TU ENLACE EN LA NUBE
+        const SHEET_ID = '1SKIgxSFgnoUhtRS_hMMdocktKlbWwEwPmZNtBJWvGB8';
+        const cloudSource = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=595796212`;
+
+        function sincronizarEcosistema() {
+            fetch(cloudSource + `&_cb=${new Date().getTime()}`)
+                .then(res => res.text())
+                .then(txt => {
+                    const cleanString = txt.substring(txt.indexOf("{"), txt.lastIndexOf("}") + 1);
+                    const json = JSON.parse(cleanString);
+                    
+                    // PROCESADOR COMPLEJO DE GOOGLE: Revisa tanto el valor plano (.v) como el formateado por fórmula (.f)
+                    mainRowsCache = json.table.rows.map(r => {
+                        if (!r.c) return null;
+                        
+                        let txtAvance = "0";
+                        if (r.c[27]) {
+                            txtAvance = r.c[27].f ? r.c[27].f : String(r.c[27].v || "0");
+                        }
+
+                        return {
+                            linea: r.c[1] ? (r.c[1].v || "") : "",
+                            sector: r.c[3] ? (r.c[3].v || "Sin especificar") : "Sin especificar",
+                            programa: r.c[5] ? (r.c[5].v || "Sin especificar") : "Sin especificar",
+                            producto: r.c[7] ? (r.c[7].v || "Sin especificar") : "Sin especificar",
+                            responsable: r.c[18] ? (r.c[18].v || "Sin Asignar") : "Sin Asignar",
+                            avance: txtAvance,
+                            semaforo: r.c[28] ? (r.c[28].v || "") : "",
+                            t1: r.c[19] ? parseFloat(r.c[19].v || 0) : 0,
+                            t2: r.c[21] ? parseFloat(r.c[21].v || 0) : 0,
+                            t3: r.c[23] ? parseFloat(r.c[23].v || 0) : 0,
+                            t4: r.c[25] ? parseFloat(r.c[25].v || 0) : 0
+                        };
+                    }).filter(x => x !== null && x.linea.trim() !== "");
+
+                    construirSelectorOficinas(mainRowsCache);
+                    renderConsola(mainRowsCache);
+                })
+                .catch(err => {
+                    document.getElementById('text-narrativa').innerHTML = '<strong>Modo de Consulta Privada:</strong> Al ejecutar el archivo directamente desde las carpetas locales de Windows, tu navegador bloquea la descarga en vivo por seguridad. Por favor, usa el botón blanco superior <strong>📁 Cargar Copia Excel Local</strong> para activar los gráficos al instante.';
+                });
+        }
+
+        // CARGA LOCAL DE CONTINGENCIA (EXCEL OFFLINE)
+        document.getElementById('excel-local').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const wb = XLSX.read(data, { type: 'array' });
+                    const ws = wb.Sheets['EVALUACION VIGENCIA 2025'] || wb.Sheets[wb.SheetNames[0]];
+                    const rawMatrix = XLSX.utils.sheet_to_json(ws, { header: 1 });
+                    
+                    let processed = [];
+                    for(let i = 1; i < rawMatrix.length; i++) {
+                        let row = rawMatrix[i];
+                        if (!row || row.length < 2 || !row[1]) continue; 
+                        
+                        processed.push({
+                            linea: row[1] ? String(row[1]) : "",
+                            sector: row[3] ? String(row[3]) : "Sin especificar",
+                            programa: row[5] ? String(row[5]) : "Sin especificar",
+                            producto: row[7] ? String(row[7]) : "Sin especificar",
+                            responsable: row[18] ? String(row[18]) : "Sin Asignar",
+                            avance: row[27] !== undefined ? String(row[27]) : "0",
+                            semaforo: row[28] ? String(row[28]) : "",
+                            t1: row[19] && !isNaN(parseFloat(row[19])) ? parseFloat(row[19]) : 0,
+                            t2: row[21] && !isNaN(parseFloat(row[21])) ? parseFloat(row[21]) : 0,
+                            t3: row[23] && !isNaN(parseFloat(row[23])) ? parseFloat(row[23]) : 0,
+                            t4: row[25] && !isNaN(parseFloat(row[25])) ? parseFloat(row[25]) : 0
+                        });
+                    }
+                    mainRowsCache = processed;
+                    construirSelectorOficinas(mainRowsCache);
+                    renderConsola(mainRowsCache);
+                } catch (error) {
+                    alert("Error en el formato de archivo.");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        function construirSelectorOficinas(rows) {
+            const select = document.getElementById('select-secretaria');
+            const listaUnica = [...new Set(rows.map(r => r.responsable))].sort();
+            select.innerHTML = '<option value="">⚙️ Todas las Oficinas</option>';
+            listaUnica.forEach(sec => {
+                if(sec.trim() !== "") select.innerHTML += `<option value="${sec}">🏢 ${sec}</option>`;
+            });
+            select.value = filtroSecretariaActual;
+        }
+
+        function renderConsola(dataRows) {
+            const queryTable = document.getElementById('table-search').value.toLowerCase();
+            
+            let totalSuma = 0, totalCount = 0;
+            let ejes = { "1": {s:0, c:0}, "2": {s:0, c:0}, "3": {s:0, c:0} };
+            globalSemaforoData = { verde: 0, amarillo: 0, rojo: 0 };
+            globalTrimestres = { t1: 0, t2: 0, t3: 0, t4: 0, c: 0 };
+            let htmlHTML = "";
+
+            dataRows.forEach(row => {
+                if (filtroSecretariaActual && row.responsable !== filtroSecretariaActual) return;
+                
+                if (row.semaforo.includes("Alto")) globalSemaforoData.verde++;
+                else if (row.semaforo.includes("Medio")) globalSemaforoData.amarillo++;
+                else if (row.semaforo.includes("Crítica") || row.semaforo.includes("<50")) globalSemaforoData.rojo++;
+
+                globalTrimestres.t1 += (row.t1 <= 1 ? row.t1 * 100 : row.t1);
+                globalTrimestres.t2 += (row.t2 <= 1 ? row.t2 * 100 : row.t2);
+                globalTrimestres.t3 += (row.t3 <= 1 ? row.t3 * 100 : row.t3);
+                globalTrimestres.t4 += (row.t4 <= 1 ? row.t4 * 100 : row.t4);
+                globalTrimestres.c++;
+            });
+
+            dataRows.forEach(row => {
+                if (filtroSecretariaActual && row.responsable !== filtroSecretariaActual) return;
+
+                let txtAv = row.avance.replace('%', '').trim();
+                let val = parseFloat(txtAv);
+                if (isNaN(val)) return;
+                if (val <= 1.0 && row.avance.indexOf('%') === -1) val = val * 100;
+
+                let estSfm = row.semaforo.includes("Alto") ? "Alto" : row.semaforo.includes("Medio") ? "Medio" : "Crítica";
+                if (filtroEstadoActual && estSfm !== filtroEstadoActual) return;
+
+                totalSuma += val;
+                totalCount++;
+
+                if (row.linea.includes("1-")) { ejes["1"].s += val; ejes["1"].c++; }
+                else if (row.linea.includes("2-")) { ejes["2"].s += val; ejes["2"].c++; }
+                else if (row.linea.includes("3-")) { ejes["3"].s += val; ejes["3"].c++; }
+
+                if (!queryTable || row.sector.toLowerCase().includes(queryTable) || row.programa.toLowerCase().includes(queryTable) || row.producto.toLowerCase().includes(queryTable) || row.responsable.toLowerCase().includes(queryTable)) {
+                    let badge = row.semaforo.includes("Alto") ? "border-emerald-500 text-emerald-700 bg-emerald-50" :
+                                row.semaforo.includes("Medio") ? "border-amber-500 text-amber-700 bg-amber-50" : "border-red-500 text-red-700 bg-red-50";
+                    let nombreSemaforoCorto = row.semaforo.includes("Alto") ? "Alto" : row.semaforo.includes("Medio") ? "Medio" : "Crítico";
+
+                    htmlHTML += `
+                        <tr class="hover:bg-slate-50 transition text-slate-900 font-bold text-sm">
+                            <td class="py-4 px-4 text-blue-800 uppercase font-extrabold text-xs max-w-[180px] truncate" title="${row.sector}">${row.sector}</td>
+                            <td class="py-4 px-4 text-slate-600 font-semibold max-w-[180px] truncate" title="${row.programa}">${row.programa}</td>
+                            <td class="py-4 px-4 text-slate-900 font-black max-w-[280px] text-base leading-snug" title="${row.producto}">${row.producto}</td>
+                            <td class="py-4 px-4 text-center"><span class="px-2.5 py-1 rounded-md border text-xs font-black block ${badge}">${nombreSemaforoCorto}</span></td>
+                            <td class="py-4 px-4 text-emerald-700 text-xs font-extrabold">${row.responsable.replace('Secretaria de ', '').replace('Secretaria ', '')}</td>
+                        </tr>
+                    `;
+                }
+            });
+
+            let descFiltro = "Mostrando datos consolidados globales.";
+            if (filtroSecretariaActual && filtroEstadoActual) descFiltro = `Filtros: ${filtroSecretariaActual} en estado ${filtroEstadoActual}.`;
+            else if (filtroSecretariaActual) descFiltro = `Filtro por Oficina: ${filtroSecretariaActual}.`;
+            else if (filtroEstadoActual) descFiltro = `Filtro por Semáforo: Metas en nivel ${filtroEstadoActual}.`;
+            document.getElementById('txt-status-filtro').innerText = descFiltro;
+
+            const global = totalCount > 0 ? (totalSuma / totalCount) : 0;
+            const l1 = ejes["1"].c > 0 ? (ejes["1"].s / ejes["1"].c) : 0;
+            const l2 = ejes["2"].c > 0 ? (ejes["2"].s / ejes["2"].c) : 0;
+            const l3 = ejes["3"].c > 0 ? (ejes["3"].s / ejes["3"].c) : 0;
+
+            document.getElementById('kpi-global').innerText = totalCount > 0 ? `${global.toFixed(1)}%` : "0.0%";
+            document.getElementById('bar-global').style.width = `${global}%`;
+            document.getElementById('kpi-l1').innerText = `${l1.toFixed(1)}%`;
+            document.getElementById('bar-l1').style.width = `${l1}%`;
+            document.getElementById('kpi-l2').innerText = `${l2.toFixed(1)}%`;
+            document.getElementById('bar-l2').style.width = `${l2}%`;
+            document.getElementById('kpi-l3').innerText = `${l3.toFixed(1)}%`;
+            document.getElementById('bar-l3').style.width = `${l3}%`;
+
+            document.getElementById('txt-alto').innerText = globalSemaforoData.verde;
+            document.getElementById('txt-medio').innerText = globalSemaforoData.amarillo;
+            document.getElementById('txt-critico').innerText = globalSemaforoData.rojo;
+
+            document.getElementById('table-body').innerHTML = htmlHTML || `<tr><td colspan="5" class="py-6 text-center text-slate-500 font-bold">Ninguna meta coincide.</td></tr>`;
+
+            desplegarGraficaDinamica();
+
+            if (filtroSecretariaActual) {
+                document.getElementById('text-narrativa').innerHTML = `Evaluando la gestión individual de la <strong>${filtroSecretariaActual}</strong>. Registra una eficiencia interna del <strong>${global.toFixed(1)}%</strong> dentro de sus metas físicas asignadas para esta vigencia.`;
+                document.getElementById('text-alerta').innerText = `Esta dependencia presenta ${globalSemaforoData.rojo} metas en estado crítico. Se aconseja revisar el listado inferior para programar planes de choque.`;
+            } else {
+                document.getElementById('text-narrativa').innerHTML = `El Plan de Desarrollo Municipal de Argelia lleva un avance general del <strong>80.7%</strong>. La oficina con mayor cumplimiento es <em>Salud y Desarrollo Social</em> con un <strong>86.8%</strong>.`;
+                document.getElementById('text-alerta').innerText = `La Secretaría de Planeación e Infraestructura registra el avance más bajo con un 62.5% promedio municipal.`;
+            }
+        }
+
+        function cambiarVistaGrafica(tipo) {
+            tipoGraficaActual = tipo;
+            document.getElementById('btn-g-dona').className = tipo === 'dona' ? 'px-2 py-0.5 bg-blue-700 text-white rounded text-[10px] font-bold' : 'px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-[10px] font-bold';
+            document.getElementById('btn-g-linea').className = tipo === 'linea' ? 'px-2 py-0.5 bg-blue-700 text-white rounded text-[10px] font-bold' : 'px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-[10px] font-bold';
+            document.getElementById('legend-semaforo-box').style.display = tipo === 'dona' ? 'grid' : 'none';
+            desplegarGraficaDinamica();
+        }
+
+        function desplegarGraficaDinamica() {
+            const ctx = document.getElementById('canvas-semaforo').getContext('2d');
+            if (chartSf) chartSf.destroy();
+
+            if (tipoGraficaActual === "dona") {
+                chartSf = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Alto', 'Medio', 'Crítico'],
+                        datasets: [{ data: [globalSemaforoData.verde, globalSemaforoData.amarillo, globalSemaforoData.rojo], backgroundColor: ['#10b981', '#f59e0b', '#ef4444'], borderWidth: 0 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '74%' }
+                });
+            } else {
+                let p = globalTrimestres.c > 0 ? globalTrimestres.c : 1;
+                chartSf = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Trimestre 1', 'Trimestre 2', 'Trimestre 3', 'Trimestre 4'],
+                        datasets: [{
+                            label: 'Evolución %',
+                            data: [globalTrimestres.t1 / p, globalTrimestres.t2 / p, globalTrimestres.t3 / p, globalTrimestres.t4 / p],
+                            borderColor: '#1d4ed8',
+                            backgroundColor: 'rgba(29, 78, 216, 0.05)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 3,
+                            pointBackgroundColor: '#1d4ed8'
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                        scales: { y: { min: 0, max: 100, ticks: { font: { size: 9, weight: 'bold' } } }, x: { ticks: { font: { size: 9, weight: 'bold' } } } }
+                    }
+                });
+            }
+        }
+
+        function leerTableroEnVozAlta() {
+            const tN = document.getElementById('text-narrativa').innerText;
+            const tA = document.getElementById('text-alerta').innerText;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(`Análisis Institucional. ${tN}. Alerta: ${tA}`);
+                u.lang = 'es-CO'; u.rate = 0.95;
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        function resetearFiltrosMaestros() {
+            filtroSecretariaActual = ""; filtroEstadoActual = "";
+            document.getElementById('select-secretaria').value = ""; document.getElementById('select-estado').value = ""; document.getElementById('table-search').value = "";
+            renderConsola(mainRowsCache);
+        }
+
+        document.getElementById('select-secretaria').addEventListener('change', (e) => { filtroSecretariaActual = e.target.value; renderConsola(mainRowsCache); });
+        document.getElementById('select-estado').addEventListener('change', (e) => { filtroEstadoActual = e.target.value; renderConsola(mainRowsCache); });
+        document.getElementById('table-search').addEventListener('input', () => renderConsola(mainRowsCache));
+        
+        // Carga Cloud Automática al arrancar la Consola
+        window.addEventListener('DOMContentLoaded', sincronizarEcosistema);
+    </script>
+</body>
+</html>
