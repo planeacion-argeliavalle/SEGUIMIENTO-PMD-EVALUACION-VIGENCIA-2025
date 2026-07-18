@@ -20,6 +20,21 @@
 </head>
 <body class="min-h-screen p-4 md:p-8 bg-slate-50">
 
+    <!-- BARRA DE NAVEGACIÓN MULTIAÑO MUNICIPAL -->
+    <nav class="max-w-7xl mx-auto mb-6 bg-slate-900 text-white rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-md border-b-4 border-emerald-600">
+        <div class="flex items-center gap-2">
+            <span class="text-base font-bold tracking-wider font-title text-emerald-400">📅 SELECCIÓN DE VIGENCIA FISCAL:</span>
+        </div>
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <a href="index.html" class="flex-1 sm:flex-none text-center bg-blue-700 text-white px-5 py-2 rounded-xl font-extrabold text-sm border-2 border-blue-500 shadow-sm hover:bg-blue-800 transition">
+                📊 Histórico 2025
+            </a>
+            <a href="vigencia2026.html" class="flex-1 sm:flex-none text-center bg-emerald-600 text-white px-5 py-2 rounded-xl font-extrabold text-sm border-2 border-emerald-500 shadow-sm hover:bg-emerald-700 transition animate-pulse">
+                🚀 Año Actual 2026
+            </a>
+        </div>
+    </nav>
+
     <!-- ENCABEZADO INSTITUCIONAL -->
     <header class="max-w-7xl mx-auto mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b-4 border-slate-300 pb-6">
         <div class="flex items-center gap-4">
@@ -30,19 +45,16 @@
             </div>
             <div>
                 <h1 class="font-title text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Argelia: Compromiso de Todos</h1>
-                <p class="text-base md:text-xl text-slate-600 font-bold mt-0.5">Portal Institucional de Rendición de Cuentas — Seguimiento al Plan de Desarrollo</p>
+                <p class="text-base md:text-xl text-slate-600 font-bold mt-0.5">Portal Institucional — Rendición de Cuentas Vigencia 2025</p>
             </div>
         </div>
         
-        <!-- BOTÓN DE ACCIÓN / SINCRONIZACIÓN -->
+        <!-- BOTÓN DE LECTURA DE RESPALDO LOCAL -->
         <div class="flex flex-wrap items-center gap-4 w-full lg:w-auto">
-            <label class="w-full sm:w-auto bg-white hover:bg-slate-100 border-2 border-slate-300 text-slate-800 font-bold text-sm px-4 py-2.5 rounded-xl transition-all cursor-pointer text-center shadow-sm">
-                📁 Cargar Copia Excel Local
+            <label class="w-full sm:w-auto bg-white hover:bg-slate-100 border-2 border-slate-300 text-slate-800 font-bold text-sm px-6 py-3 rounded-xl transition-all cursor-pointer text-center shadow-sm">
+                📁 Cargar Copia Física (Offline 2025)
                 <input type="file" id="excel-local" accept=".xlsx, .xls" class="hidden" />
             </label>
-            <button onclick="sincronizarEcosistema()" class="w-full sm:w-auto bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-sm px-6 py-3.5 rounded-xl transition-all shadow-md shadow-blue-700/20 text-center">
-                🔄 Sincronizar Datos en Vivo
-            </button>
         </div>
     </header>
 
@@ -108,7 +120,7 @@
                 </div>
             </div>
             <div class="mt-4 p-3 rounded-xl bg-slate-100 text-xs font-bold text-slate-700" id="txt-status-filtro">
-                Cargando datos relacionales...
+                Estableciendo enlace cloud...
             </div>
         </div>
 
@@ -144,11 +156,11 @@
                 </div>
                 <hr class="mb-3">
                 <p id="text-narrativa" class="text-sm text-slate-800 leading-relaxed text-justify font-normal">
-                    Sincronizando indicadores con el archivo maestro de Google Drive...
+                    Conectando con la base relacional de la Alcaldía de Argelia...
                 </p>
             </div>
-            <div class="mt-4 p-3 bg-red-50 border-2 border-red-200 text-xs font-semibold rounded-lg text-slate-700" id="text-alerta">
-                Estableciendo conexión en la nube...
+            <div class="mt-4 p-3 bg-blue-50 border-2 border-blue-200 text-xs font-semibold rounded-lg text-slate-700" id="text-alerta">
+                Sincronizando con Google Drive en tiempo real...
             </div>
         </div>
     </main>
@@ -175,13 +187,13 @@
                     </tr>
                 </thead>
                 <tbody id="table-body" class="divide-y divide-slate-200 text-slate-900 font-medium">
-                    <tr><td colspan="5" class="py-10 text-center text-slate-500 font-bold text-base">Cargando base relacional de Argelia...</td></tr>
+                    <tr><td colspan="5" class="py-10 text-center text-slate-500 font-bold text-base">Estableciendo conexión en vivo...</td></tr>
                 </tbody>
             </table>
         </div>
     </section>
 
-    <!-- ENGINE DE CONEXIÓN ROBUSTA Y CONTROL DE FORMULAS EN VIVO -->
+    <!-- ENGINE CORE AUTOMÁTICO DE SEGUIMIENTO -->
     <script>
         let chartSf = null;
         let mainRowsCache = [];
@@ -192,7 +204,7 @@
         let globalSemaforoData = { verde: 0, amarillo: 0, rojo: 0 };
         let globalTrimestres = { t1: 0, t2: 0, t3: 0, t4: 0, c: 0 };
 
-        // EXTRACTOR DIRECTO AL GID EN TIEMPO REAL DE TU ENLACE EN LA NUBE
+        // ID DEL DOCUMENTO ENLAZADO VIGENCIA 2025
         const SHEET_ID = '1SKIgxSFgnoUhtRS_hMMdocktKlbWwEwPmZNtBJWvGB8';
         const cloudSource = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=595796212`;
 
@@ -203,7 +215,6 @@
                     const cleanString = txt.substring(txt.indexOf("{"), txt.lastIndexOf("}") + 1);
                     const json = JSON.parse(cleanString);
                     
-                    // PROCESADOR COMPLEJO DE GOOGLE: Revisa tanto el valor plano (.v) como el formateado por fórmula (.f)
                     mainRowsCache = json.table.rows.map(r => {
                         if (!r.c) return null;
                         
@@ -231,11 +242,11 @@
                     renderConsola(mainRowsCache);
                 })
                 .catch(err => {
-                    document.getElementById('text-narrativa').innerHTML = '<strong>Modo de Consulta Privada:</strong> Al ejecutar el archivo directamente desde las carpetas locales de Windows, tu navegador bloquea la descarga en vivo por seguridad. Por favor, usa el botón blanco superior <strong>📁 Cargar Copia Excel Local</strong> para activar los gráficos al instante.';
+                    document.getElementById('text-narrativa').innerHTML = 'Error conectando con la nube. Usa la opción de carga local.';
                 });
         }
 
-        // CARGA LOCAL DE CONTINGENCIA (EXCEL OFFLINE)
+        // CARGA LOCAL DE RESPALDO (OFFLINE)
         document.getElementById('excel-local').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -344,7 +355,7 @@
                 }
             });
 
-            let descFiltro = "Mostrando datos consolidados globales.";
+            let descFiltro = "Mostrando datos consolidados globales 2025.";
             if (filtroSecretariaActual && filtroEstadoActual) descFiltro = `Filtros: ${filtroSecretariaActual} en estado ${filtroEstadoActual}.`;
             else if (filtroSecretariaActual) descFiltro = `Filtro por Oficina: ${filtroSecretariaActual}.`;
             else if (filtroEstadoActual) descFiltro = `Filtro por Semáforo: Metas en nivel ${filtroEstadoActual}.`;
@@ -373,12 +384,11 @@
             desplegarGraficaDinamica();
 
             if (filtroSecretariaActual) {
-                document.getElementById('text-narrativa').innerHTML = `Evaluando la gestión individual de la <strong>${filtroSecretariaActual}</strong>. Registra una eficiencia interna del <strong>${global.toFixed(1)}%</strong> dentro de sus metas físicas asignadas para esta vigencia.`;
-                document.getElementById('text-alerta').innerText = `Esta dependencia presenta ${globalSemaforoData.rojo} metas en estado crítico. Se aconseja revisar el listado inferior para programar planes de choque.`;
+                document.getElementById('text-narrativa').innerHTML = `Evaluando la gestión individual de la <strong>${filtroSecretariaActual}</strong> para la vigencia 2025.`;
             } else {
-                document.getElementById('text-narrativa').innerHTML = `El Plan de Desarrollo Municipal de Argelia lleva un avance general del <strong>80.7%</strong>. La oficina con mayor cumplimiento es <em>Salud y Desarrollo Social</em> con un <strong>86.8%</strong>.`;
-                document.getElementById('text-alerta').innerText = `La Secretaría de Planeación e Infraestructura registra el avance más bajo con un 62.5% promedio municipal.`;
+                document.getElementById('text-narrativa').innerHTML = `El Plan de Desarrollo Municipal de Argelia cerró la vigencia 2025 con los datos históricos aquí descritos.`;
             }
+            document.getElementById('text-alerta').innerText = `Consola de histórico 2025 activa. Utiliza la barra superior para cambiar a la vigencia actual 2026.`;
         }
 
         function cambiarVistaGrafica(tipo) {
@@ -429,10 +439,9 @@
 
         function leerTableroEnVozAlta() {
             const tN = document.getElementById('text-narrativa').innerText;
-            const tA = document.getElementById('text-alerta').innerText;
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                const u = new SpeechSynthesisUtterance(`Análisis Institucional. ${tN}. Alerta: ${tA}`);
+                const u = new SpeechSynthesisUtterance(`Histórico Dos Mil Veinticinco. ${tN}`);
                 u.lang = 'es-CO'; u.rate = 0.95;
                 window.speechSynthesis.speak(u);
             }
@@ -448,7 +457,6 @@
         document.getElementById('select-estado').addEventListener('change', (e) => { filtroEstadoActual = e.target.value; renderConsola(mainRowsCache); });
         document.getElementById('table-search').addEventListener('input', () => renderConsola(mainRowsCache));
         
-        // Carga Cloud Automática al arrancar la Consola
         window.addEventListener('DOMContentLoaded', sincronizarEcosistema);
     </script>
 </body>
