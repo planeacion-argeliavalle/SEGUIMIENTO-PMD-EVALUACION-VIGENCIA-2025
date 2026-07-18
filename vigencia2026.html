@@ -20,6 +20,21 @@
 </head>
 <body class="min-h-screen p-4 md:p-8 bg-slate-50">
 
+    <!-- BARRA DE NAVEGACIÓN MULTIAÑO MUNICIPAL (PERMANENTE 2026) -->
+    <nav class="max-w-7xl mx-auto mb-6 bg-slate-900 text-white rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-md border-b-4 border-emerald-600">
+        <div class="flex items-center gap-2">
+            <span class="text-base font-bold tracking-wider font-title text-emerald-400">📅 SELECCIÓN DE VIGENCIA FISCAL:</span>
+        </div>
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <a href="index.html" class="flex-1 sm:flex-none text-center bg-slate-700 text-slate-300 px-5 py-2 rounded-xl font-extrabold text-sm border-2 border-slate-600 shadow-sm hover:bg-slate-800 transition">
+                📊 Histórico 2025
+            </a>
+            <a href="vigencia2026.html" class="flex-1 sm:flex-none text-center bg-emerald-600 text-white px-5 py-2 rounded-xl font-extrabold text-sm border-2 border-emerald-500 shadow-sm hover:bg-emerald-700 transition">
+                🚀 Año Actual 2026
+            </a>
+        </div>
+    </nav>
+
     <!-- ENCABEZADO INSTITUCIONAL VIGENCIA 2026 -->
     <header class="max-w-7xl mx-auto mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border-b-4 border-slate-300 pb-6">
         <div class="flex items-center gap-4">
@@ -192,7 +207,7 @@
         let globalSemaforoData = { verde: 0, amarillo: 0, rojo: 0 };
         let globalTrimestres = { t1: 0, t2: 0, t3: 0, t4: 0, c: 0 };
 
-        // CONEXIÓN DIRECTA ENLAZADA A TU NUEVO GID DE DRIVE 2026
+        // CONEXIÓN DIRECTA ENLAZADA A TU HOJA DE DRIVE VIGENCIA 2026 (GID: 295806644)
         const SHEET_ID = '1SKIgxSFgnoUhtRS_hMMdocktKlbWwEwPmZNtBJWvGB8';
         const cloudSource = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=295806644`;
 
